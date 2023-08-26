@@ -1,11 +1,23 @@
-#ifndef RESTAT_MODEL_H
-#define RESTAT_MODEL_H
+#ifndef STATMOD_MODEL_H
+#define STATMOD_MODEL_H
+
+
+#include "vector.h"
+
+#include <cstddef>
+#include <algorithm>
+#include <numeric>
 
 
 // Model interface
 class Model {
+public:
+    virtual void first(int n, int p_values_n, int k) = 0;
 
+    virtual void second(int n, int p_values_n, int k) = 0;
 };
 
 
-#endif //RESTAT_MODEL_H
+
+
+#endif //STATMOD_MODEL_H

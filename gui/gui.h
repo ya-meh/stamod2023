@@ -1,12 +1,11 @@
-//
-// Created by Mikhail Kiselev on 26.08.2023.
-//
+#ifndef STATMOD_GUI_H
+#define STATMOD_GUI_H
 
-#ifndef RESTAT_GUI_H
-#define RESTAT_GUI_H
 
+// Class representing program interface
 class GUI {
 
 };
 
-#endif //RESTAT_GUI_H
+
+#endif //STATMOD_GUI_H
