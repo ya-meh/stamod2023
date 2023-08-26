@@ -1,4 +1,4 @@
-#include "../model/vector.h"
+#include "../internal/vector.h"
 #include "../model/model_table.h"
 
 

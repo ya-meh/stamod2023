@@ -5,7 +5,7 @@
 #ifndef STATMOD_STAT_H
 #define STATMOD_STAT_H
 
-#include "vector.h"
+#include "../internal/vector.h"
 #include "probdist.h"
 
 #include <algorithm>

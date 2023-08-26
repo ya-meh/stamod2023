@@ -2,8 +2,8 @@
 #define STATMOD_EXPERIMENT_H
 
 
-#include "vector.h"
-#include "pair.h"
+#include "../internal/vector.h"
+#include "../internal/pair.h"
 #include "model.h"
 #include "stat.h"
 

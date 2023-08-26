@@ -2,7 +2,7 @@
 #define STATMOD_MODEL_TABLE_H
 
 
-#include "vector.h"
+#include "../internal/vector.h"
 #include "experiment.h"
 
 #include <algorithm>

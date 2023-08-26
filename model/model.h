@@ -2,7 +2,7 @@
 #define STATMOD_MODEL_H
 
 
-#include "vector.h"
+#include "../internal/vector.h"
 
 #include <cstddef>
 #include <algorithm>

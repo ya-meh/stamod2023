@@ -14,6 +14,6 @@ add_executable(${PROJECT_NAME}
         controller/main.cpp
         model/model.h model/model.cpp
         gui/gui.h gui/gui.cpp
-        model/probdist.h model/probdist.cpp model/vector.h model/random.h model/stat.h model/model_table.cpp model/model_table.h model/experiment.cpp model/experiment.h model/pair.h)
+        model/probdist.h model/probdist.cpp internal/vector.h internal/random.h model/stat.h model/model_table.cpp model/model_table.h model/experiment.cpp model/experiment.h internal/pair.h)
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets)
