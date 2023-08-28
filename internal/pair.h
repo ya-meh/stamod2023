@@ -10,8 +10,8 @@
 template<typename T, typename U>
 class Pair {
 public:
-    T first;
-    U second;
+    T first{};
+    U second{};
 
     template<typename T_=T, typename U_=U>
     bool operator<(const Pair<T_, U_> &other) {
