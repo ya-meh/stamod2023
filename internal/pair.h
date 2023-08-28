@@ -5,6 +5,7 @@
 #ifndef STATMOD_PAIR_H
 #define STATMOD_PAIR_H
 
+
 #include <sstream>
 
 template<typename T, typename U>
@@ -32,5 +33,6 @@ template<typename T, typename U>
 std::ostream &operator<<(std::ostream &os, const Pair<T, U> &p) {
     return os << '(' << p.first << ", " << p.second << ')';
 }
+
 
 #endif //STATMOD_PAIR_H

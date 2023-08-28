@@ -27,7 +27,7 @@ public:
         return result_to_count;
     }
 
-    [[nodiscard]] Vector<double> calc_p_values(size_t experiments_n, size_t p_vals_n, Model *alt = nullptr) {
+    [[nodiscard]] Vector<double> calc_p_values(size_t experiments_n, size_t p_vals_n, Model *alt = nullptr) const {
         auto p_values = Vector<double>(p_vals_n);
 
         for (size_t i = 0; i < p_vals_n; ++i) {

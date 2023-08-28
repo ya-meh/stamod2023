@@ -14,7 +14,7 @@ public:
 
 #define __concat_inner(a, b) a ## b
 #define __concat(a, b) __concat_inner(a, b)
-#define __random_name() CONCAT(defer_, __COUNTER__)
+#define __random_name() __concat(defer_, __COUNTER__)
 
 #define defer(func) \
     volatile auto __random_name = Defer(func)

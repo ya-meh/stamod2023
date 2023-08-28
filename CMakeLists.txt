@@ -13,7 +13,7 @@ find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 add_executable(${PROJECT_NAME}
         controller/main.cpp
-        model/model.h model/model.cpp
+        model/model.h
         gui/gui.h gui/gui.cpp
         internal/probdist.h internal/probdist.cpp internal/vector.h internal/random.h model/model_table.cpp model/model_table.h model/experiment.cpp model/experiment.h internal/pair.h model/model_chen.cpp model/model_chen.h internal/defer.h)
 
