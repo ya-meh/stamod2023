@@ -14,7 +14,15 @@ find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
 add_executable(${PROJECT_NAME}
         controller/main.cpp
         model/model.h
-        gui/application.h gui/application.cpp
-        internal/probdist.h internal/probdist.cpp internal/vector.h internal/random.h model/model_table.cpp model/model_table.h model/experiment.cpp model/experiment.h internal/pair.h model/model_chen.cpp model/model_chen.h internal/defer.h gui/graph_table.h gui/gpt.h gui/regraph.h)
+        internal/probdist.h internal/probdist.cpp
+        internal/vector.h
+        internal/random.h
+        model/model_table.cpp model/model_table.h
+        model/experiment.cpp model/experiment.h
+        internal/pair.h
+        model/model_chen.cpp model/model_chen.h
+        internal/defer.h
+        gui/graph.h
+        controller/model_logic.h gui/config.h gui/input.h)
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Charts)

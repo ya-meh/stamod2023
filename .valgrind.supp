@@ -1,0 +1,4 @@
+{
+    /usr/lib/libQt5Core.so.5.15.9
+    Memcheck:Leak
+}

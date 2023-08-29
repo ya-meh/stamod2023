@@ -1,22 +1,12 @@
-#ifndef STATMOD_REGRAPH_H
-#define STATMOD_REGRAPH_H
+#ifndef STATMOD_CONFIG_H
+#define STATMOD_CONFIG_H
 
-
-#include "../internal/vector.h"
-#include "../internal/pair.h"
-#include "../model/model.h"
-#include "../model/model_chen.h"
 
 #include <QtWidgets>
-#include <QtCharts/QChartView>
-#include <QtCharts/QLineSeries>
-#include <QtCharts/QBarSeries>
-#include <QtCharts/QBarSet>
 #include <QValueAxis>
-#include <utility>
-#include <QBarCategoryAxis>
 
 QT_CHARTS_USE_NAMESPACE
+
 
 class Config {
 public:
@@ -39,33 +29,39 @@ public:
     struct Field {
         QString name{};
         qreal value{};
+        int type = INT;
+
+        const static int INT = 0;
+        const static int DOUBLE = 1;
+
+        [[nodiscard]] QLabel *label() const { return new QLabel(name); }
+
+        [[nodiscard]] QLineEdit *edit_field() const {
+            std::string str;
+            if (type == DOUBLE)
+                str = std::to_string(value);
+            else
+                str = std::to_string(static_cast<int>(value));
+            return new QLineEdit(QString::fromStdString(str));
+        }
     };
 
 
     QString title;
     Axis x_axis = {"X"};
     Axis y_axis = {"Y"};
-    // name + default value
     Vector<Field> fields = {};
+    size_t points_n = 1000;
 
     [[nodiscard]] Vector<Pair<QLabel *, QLineEdit *>> labels_input() const {
         auto labels = Vector<Pair<QLabel *, QLineEdit *>>(fields.size());
 
         for (size_t i = 0; i < labels.size(); ++i)
-            labels[i] = {new QLabel(fields[i].name),
-                         new QLineEdit(QString::fromStdString(std::to_string(fields[i].value)))};
+            labels[i] = {fields[i].label(), fields[i].edit_field()};
 
         return labels;
     }
 };
 
-class ReTableGraphWidget : public QWidget {
-    Config cfg;
-public:
-    explicit ReTableGraphWidget(Config config, QWidget *parent) : cfg(std::move(config)), QWidget(parent) {
 
-    }
-};
-
-
-#endif //STATMOD_REGRAPH_H
+#endif //STATMOD_CONFIG_H

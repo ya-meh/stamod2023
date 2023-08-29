@@ -2,7 +2,6 @@
 
 TableModel::TableModel(const Vector<int> &k) : sum_(k.sum()), table_(sum_), probabilities_(k.size()), k(k) {
     size_t i = 1, j = 1, l = k[0];
-    std::cout << k.to_string() << std::endl;
     while (l <= sum_) {
         while (i <= l) {
             table_[i - 1] = j;
