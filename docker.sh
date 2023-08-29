@@ -3,4 +3,4 @@
 set -e
 
 docker build -t vg .
-docker run --rm --privileged -it vg
+docker run --rm -it vg

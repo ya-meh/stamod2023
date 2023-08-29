@@ -2,21 +2,24 @@
 #define STATMOD_DEFER_H
 
 
-// GoLang-like defer
+// GoLang-like defer, but instead of calling the func at the end of the master function,
+// it calls func, at the end of the lifetime of defer()
+#define defer(func) \
+    volatile auto __random_name = DeferWrapper(func)
+
+
 template<typename T>
-class Defer {
+class DeferWrapper {
     T func;
 public:
-    explicit Defer(T func) : func(func) {}
+    explicit DeferWrapper(T func) : func(func) {}
 
-    ~Defer() { func(); }
+    ~DeferWrapper() { func(); }
 };
 
 #define __concat_inner(a, b) a ## b
 #define __concat(a, b) __concat_inner(a, b)
 #define __random_name() __concat(defer_, __COUNTER__)
 
-#define defer(func) \
-    volatile auto __random_name = Defer(func)
 
 #endif //STATMOD_DEFER_H

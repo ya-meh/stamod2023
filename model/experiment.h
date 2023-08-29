@@ -6,9 +6,9 @@
 #include "../internal/pair.h"
 
 
-using Experiment = Pair<size_t, double>;
+using SingleExperiment = Pair<size_t, double>;
 
-class Experiments : public Vector<Experiment> {
+class Experiments : public Vector<SingleExperiment> {
     [[nodiscard]] double expected(size_t i) const;
 
     [[nodiscard]] size_t observed(size_t i) const;

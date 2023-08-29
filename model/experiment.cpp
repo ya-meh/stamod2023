@@ -12,7 +12,7 @@ T sqr(const T &val) {
     return val * val;
 }
 
-Experiments::Experiments(const Vector<size_t> &observed, const Vector<double> &expected) : Vector<Experiment>(
+Experiments::Experiments(const Vector<size_t> &observed, const Vector<double> &expected) : Vector<SingleExperiment>(
         observed.size()) {
     for (size_t i = 0; i < observed.size(); ++i) {
         (*this)[i] = {observed[i], i > expected.size() ? 0 : expected[i]};
@@ -22,7 +22,7 @@ Experiments::Experiments(const Vector<size_t> &observed, const Vector<double> &e
 Experiments Experiments::unionize(double floor) {
     auto united = Experiments({}, {});
 
-    auto bucket = Experiment{0, 0};
+    auto bucket = SingleExperiment{0, 0};
     for (size_t i = 0; i < size(); ++i) {
         if (expected(i) > floor) {
             united.push_back((*this)[i]);
@@ -34,7 +34,7 @@ Experiments Experiments::unionize(double floor) {
             }
         }
     }
-    if (bucket == Experiment{0, 0}) {
+    if (bucket == SingleExperiment{0, 0}) {
         if (united.empty()) {
             united.push_back({0, 0});
         }
