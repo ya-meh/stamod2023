@@ -1,6 +1,9 @@
-#ifndef STATMOD_CONFIG_H
-#define STATMOD_CONFIG_H
+#ifndef STATMOD_GRAPH_CONFIG_H
+#define STATMOD_GRAPH_CONFIG_H
 
+
+#include "../internal/pair.h"
+#include "../internal/vector.h"
 
 #include <QtWidgets>
 #include <QValueAxis>
@@ -56,12 +59,13 @@ public:
     [[nodiscard]] Vector<Pair<QLabel *, QLineEdit *>> labels_input() const {
         auto labels = Vector<Pair<QLabel *, QLineEdit *>>(fields.size());
 
-        for (size_t i = 0; i < labels.size(); ++i)
+        for (size_t i = 0; i < labels.size(); ++i) {
             labels[i] = {fields[i].label(), fields[i].edit_field()};
+        }
 
         return labels;
     }
 };
 
 
-#endif //STATMOD_CONFIG_H
+#endif //STATMOD_GRAPH_CONFIG_H

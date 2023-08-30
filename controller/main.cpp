@@ -1,23 +1,9 @@
-#include "../internal/vector.h"
-#include "../model/model_table.h"
-#include "../model/model_chen.h"
-#include "../internal/defer.h"
-#include "../gui/graph.h"
 #include "model_logic.h"
 
-
-#include <QApplication>
-#include <QWidget>
-#include <QPushButton>
-
-#include <iostream>
+#include "../gui/graph.h"
 
 #include <QApplication>
 #include <QMainWindow>
-#include <QtCharts>
-
-#include <thread>
-#include <chrono>
 
 QT_CHARTS_USE_NAMESPACE
 
@@ -27,7 +13,8 @@ int main(int argc, char *argv[]) {
 
     QMainWindow window;
     auto chartView = new TableGraphWidget(new TableModelRunner,
-                                          &window
+                                          &window,
+                                          new ChenModelRunner
     );
 
     window.setCentralWidget(chartView);

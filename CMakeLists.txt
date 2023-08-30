@@ -23,6 +23,6 @@ add_executable(${PROJECT_NAME}
         model/model_chen.cpp model/model_chen.h
         internal/defer.h
         gui/graph.h
-        controller/model_logic.h gui/config.h gui/input.h)
+        controller/model_logic.h gui/graph_config.h gui/graph_input.h)
 
 target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Charts)

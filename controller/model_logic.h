@@ -2,19 +2,24 @@
 #define STATMOD_MODEL_LOGIC_H
 
 
-#include "../gui/input.h"
+#include "../gui/graph_input.h"
 #include "../model/model_chen.h"
 #include "../model/model_table.h"
 
 
 class ChenModelRunner : public ModelRunner {
+    const Vector<int> SPEC = {INT, INT, INT, INT, DOUBLE};
 public:
     Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
-        auto prob_len = data[0].second->text().toInt();
-        auto m = data[1].second->text().toInt();
-        auto exp_count = data[2].second->text().toInt();
-        auto p_vals = data[3].second->text().toInt();
-        auto deviation = data[4].second->text().toDouble();
+        auto [msg, ok] = is_valid(data);
+        if (!ok)
+            throw std::invalid_argument(msg.toStdString());
+
+        auto prob_len = to_int(data[0]);
+        auto m = to_int(data[1]);
+        auto exp_count = to_int(data[2]);
+        auto p_vals = to_int(data[3]);
+        auto deviation = to_double(data[4]);
 
         auto model = ChenModel(Vector<double>::generate_normal(prob_len), m);
 
@@ -39,17 +44,25 @@ public:
                       }
         };
     }
+
+    [[nodiscard]] const Vector<int> &input_types_spec() const override { return SPEC; }
 };
 
 
 class TableModelRunner : public ModelRunner {
+    const Vector<int> SPEC = {INT, INT, INT, INT, DOUBLE};
+
 public:
     Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
-        auto k_len =data[0].second->text().toInt();
-        auto max =data[1].second->text().toInt();
-        auto exp_count = data[2].second->text().toInt();
-        auto p_vals = data[3].second->text().toInt();
-        auto deviation = data[4].second->text().toDouble();
+        auto [msg, ok] = is_valid(data);
+        if (!ok)
+            throw std::invalid_argument(msg.toStdString());
+
+        auto k_len = to_int(data[0]);
+        auto max = to_int(data[1]);
+        auto exp_count = to_int(data[2]);
+        auto p_vals = to_int(data[3]);
+        auto deviation = to_double(data[4]);
 
         auto model = TableModel(Vector<int>::generate(k_len, max));
 
@@ -74,6 +87,8 @@ public:
                       }
         };
     }
+
+    [[nodiscard]] const Vector<int> &input_types_spec() const override { return SPEC; }
 };
 
 
