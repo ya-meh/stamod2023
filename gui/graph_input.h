@@ -34,6 +34,8 @@ public:
 
     [[nodiscard]] virtual const Vector<int> &input_types_spec() const = 0;
 
+    [[nodiscard]] virtual int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const { return 0; };
+
     [[nodiscard]] Pair<QString, bool> is_valid(const Vector<Pair<QLabel *, QLineEdit *>> &data) const {
         if (data.size() != input_types_spec().size())
             return {"wrong data length", false};

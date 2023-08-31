@@ -28,29 +28,46 @@ QT_CHARTS_USE_NAMESPACE
 class TableGraphWidget : public QWidget {
     Config cfg;
     Vector<Pair<QLabel *, QLineEdit *>> labels;
-    ModelRunner *curr;
+    ModelRunner *model_runner;
+    QAbstractAxis *x_axis, *y_axis;
 
 public:
-    explicit TableGraphWidget(ModelRunner *runner,
-                              QWidget *parent,
-                              ModelRunner *next_run = nullptr) : cfg(runner->default_config()),
-                                                                 QWidget(parent),
-                                                                 curr(runner) {
+    explicit TableGraphWidget(ModelRunner *runner, QWidget *parent) : cfg(runner->default_config()),
+                                                                      QWidget(parent),
+                                                                      model_runner(runner),
+                                                                      x_axis(cfg.x_axis.convert()),
+                                                                      y_axis(cfg.y_axis.convert()) {
         auto *chart = new QChart();
         auto *chart_view = new QChartView(chart);
 
         auto *series = new QLineSeries();
         chart->addSeries(series);
 
-        chart->addAxis(cfg.x_axis.convert(), Qt::AlignBottom);
-        chart->addAxis(cfg.y_axis.convert(), Qt::AlignLeft);
+        chart->addAxis(x_axis, Qt::AlignBottom);
+        chart->addAxis(y_axis, Qt::AlignLeft);
 
         auto refresh_button = new QPushButton("Refresh");
         connect(refresh_button, &QPushButton::clicked, [=]() {
             Vector<double> p_values;
 
             try {
-                p_values = curr->from(labels, cfg.points_n);
+                p_values = model_runner->from(labels, cfg.points_n);
+                switch (model_runner->error_type(labels)) {
+                    case 1: {
+                        chart->removeAxis(y_axis);
+                        auto y_axis_cfg = cfg.y_axis;
+                        y_axis_cfg.name = "Type I Error";
+                        chart->addAxis(y_axis, Qt::AlignLeft);
+                        break;
+                    }
+                    case 2: {
+                        chart->removeAxis(y_axis);
+                        auto y_axis_cfg = cfg.y_axis;
+                        y_axis_cfg.name = "Type II Error";
+                        chart->addAxis(y_axis, Qt::AlignLeft);
+                        break;
+                    }
+                }
             } catch (const std::invalid_argument &e) {
                 QMessageBox::information(parent, "An Error Occurred", e.what());
                 return;

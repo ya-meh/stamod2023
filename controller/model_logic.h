@@ -46,6 +46,10 @@ public:
     }
 
     [[nodiscard]] const Vector<int> &input_types_spec() const override { return SPEC; }
+
+    [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
+        return 1 + (to_double(data[4]) == 0);
+    }
 };
 
 
@@ -89,6 +93,10 @@ public:
     }
 
     [[nodiscard]] const Vector<int> &input_types_spec() const override { return SPEC; }
+
+    [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
+        return 1 + (to_int(data[4]) == 0);
+    }
 };
 
 
