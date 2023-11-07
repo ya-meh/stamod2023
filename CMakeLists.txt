@@ -9,7 +9,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON)
 
-find_package(Qt5 COMPONENTS Widgets Charts REQUIRED)
+find_package(Qt6 COMPONENTS Widgets Charts REQUIRED)
 
 add_executable(${PROJECT_NAME}
         controller/main.cpp
@@ -25,4 +25,4 @@ add_executable(${PROJECT_NAME}
         gui/graph.h
         controller/model_logic.h gui/graph_config.h gui/graph_input.h gui/window.h)
 
-target_link_libraries(${PROJECT_NAME} Qt5::Widgets Qt5::Charts)
+target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Charts)

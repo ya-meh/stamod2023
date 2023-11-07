@@ -22,8 +22,6 @@
 #include <iostream>
 #include <utility>
 
-QT_CHARTS_USE_NAMESPACE
-
 
 class TableGraphWidget : public QWidget {
     Config cfg;

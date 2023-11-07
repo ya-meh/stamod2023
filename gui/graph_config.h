@@ -8,9 +8,6 @@
 #include <QtWidgets>
 #include <QValueAxis>
 
-QT_CHARTS_USE_NAMESPACE
-
-
 class Config {
 public:
     struct Axis {
