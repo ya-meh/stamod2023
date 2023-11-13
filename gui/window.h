@@ -11,10 +11,16 @@
 
 class Window : public QMainWindow {
     Vector<ModelRunner *> models_;
-    TableGraphWidget *graph = nullptr;
+    TableGraphWidget *graph_ = nullptr;
 public:
     explicit Window(Vector<ModelRunner *> models, int width = 800, int height = 600) : models_(std::move(models)) {
         auto bar = new QToolBar("Models", this);
+
+        auto help_action = new QAction("HELP", this);
+        connect(help_action, &QAction::triggered, [=]() {
+            
+        });
+        bar->addAction(help_action);
 
         for (auto model: models_) {
             auto action = new QAction(model->default_config().title, this);
@@ -26,7 +32,7 @@ public:
 
         addToolBar(bar);
 
-        bar->actions().first()->trigger();
+        bar->actions().last()->trigger();
 
         setMinimumSize(width, height);
         resize(width, height);
@@ -35,8 +41,8 @@ public:
     };
 
     void chart(ModelRunner *model) {
-        delete graph;
-        setCentralWidget(graph = new TableGraphWidget(model, this));
+        delete graph_;
+        setCentralWidget(graph_ = new TableGraphWidget(model, this));
     }
 };
 

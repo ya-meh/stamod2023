@@ -8,7 +8,11 @@
 
 
 class ChenModelRunner : public ModelRunner {
-    const Vector<int> SPEC = {INT, INT, INT, INT, DOUBLE};
+    const Vector<Spec> SPEC = {{INT,    1},
+                               {INT,    1},
+                               {INT,    1},
+                               {INT,    1},
+                               {DOUBLE, 0, 1}};
 public:
     Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
         auto [msg, ok] = is_valid(data);
@@ -45,7 +49,7 @@ public:
         };
     }
 
-    [[nodiscard]] const Vector<int> &input_types_spec() const override { return SPEC; }
+    [[nodiscard]] const Vector<Spec> &input_types_spec() const override { return SPEC; }
 
     [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
         return 1 + (to_double(data[4]) == 0);
@@ -54,7 +58,11 @@ public:
 
 
 class TableModelRunner : public ModelRunner {
-    const Vector<int> SPEC = {INT, INT, INT, INT, DOUBLE};
+    const Vector<Spec> SPEC = {{INT,    1},
+                               {INT,    1},
+                               {INT,    1},
+                               {INT,    1},
+                               {DOUBLE, 0}};
 
 public:
     Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
@@ -92,7 +100,7 @@ public:
         };
     }
 
-    [[nodiscard]] const Vector<int> &input_types_spec() const override { return SPEC; }
+    [[nodiscard]] const Vector<Spec> &input_types_spec() const override { return SPEC; }
 
     [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
         return 1 + (to_int(data[4]) == 0);
