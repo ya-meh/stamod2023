@@ -10,6 +10,7 @@
 #include <numeric>
 #include <string>
 #include <exception>
+#include <iostream>
 
 #include <QLabel>
 #include <QLineEdit>
@@ -24,29 +25,60 @@ protected:
         long double min = std::numeric_limits<long double>::min();
         long double max = std::numeric_limits<long double>::max();
 
-        [[nodiscard]] bool is_valid(const QString &text) const {
-            auto std_text = text.toStdString();
+        [[nodiscard]] long double force_bounds(long double val) const {
+            if (val < min) {
+                return min;
+            }
+            if (val > max) {
+                return max;
+            }
+            return val;
+        }
+
+        [[nodiscard]] QString to_q_string(long double val) const {
             switch (type) {
                 case INT: {
-                    volatile const auto val = std::stoi(std_text);
-                    if (val < min || val > max) {
-                        return false;
-                    }
-                    break;
+                    return QString::fromStdString(std::to_string((long long) val));
                 }
                 case DOUBLE: {
-                    volatile const auto val = std::stof(std_text);
-                    if (val < min || val > max) {
-                        return false;
-                    }
-                    break;
+                    return QString::fromStdString(std::to_string(val));
                 }
                 default: {
-                    throw std::runtime_error("Invalid input ModelRunner::Spec");
+                    throw std::runtime_error("Invalid input ModelRunner::Spec::is_valid");
                 }
             }
+        }
 
-            return true;
+        [[nodiscard]] bool in_bounds(long double val) const {
+            return !((val < min) || (val > max));
+        }
+
+        [[nodiscard]] Pair<long double, bool> is_valid(const QString &text) const {
+            auto std_text = text.toStdString();
+
+            try {
+                switch (type) {
+                    case INT: {
+                        volatile const auto val = std::stoi(std_text);
+                        if (!in_bounds(val)) {
+                            return {(long double) val, false};
+                        }
+                        return {(long double) val, true};
+                    }
+                    case DOUBLE: {
+                        volatile const auto val = std::stof(std_text);
+                        if (!in_bounds(val)) {
+                            return {val, false};
+                        }
+                        return {val, true};
+                    }
+                    default: {
+                        throw std::runtime_error("Invalid input ModelRunner::Spec::is_valid");
+                    }
+                }
+            } catch (std::exception &e) {
+                return {min, false};
+            }
         }
     };
 
@@ -76,17 +108,21 @@ public:
             return {"wrong data length", false};
 
         for (size_t i = 0; i < data.size(); ++i) {
-            try {
-                if (!input_types_spec()[i].is_valid(data[i].second->text())) {
-                    return {"Value \"" + data[i].first->text() + "\" is out of bounds (" + data[i].second->text() + ")",
-                            false};
+            auto spec = input_types_spec()[i];
+            auto [val, ok] = spec.is_valid(data[i].second->text());
+            if (!ok) {
+                if (spec.in_bounds(val)) {
+                    auto trimmed = data[i].second->text().trimmed();
+                    if (trimmed == "" || trimmed == "-") {
+                        return {"ignore", false};
+                    }
+                    return {"parse failure of arg " + data[i].first->text(), false};
                 }
-            } catch (const std::invalid_argument &e) {
-                return {"while parsing argument '"
-                        + data[i].first->text() + "' an invalid_argument occurred: " + e.what(), false};
-            } catch (const std::out_of_range &e) {
-                return {"while parsing argument '"
-                        + data[i].first->text() + "' an out_of_range occurred: " + e.what(), false};
+
+                auto log = spec.to_q_string(spec.force_bounds(val));
+                std::cout << data[i].second->text().toStdString() << ' ' << val << ' ' << log.toStdString()
+                          << std::endl;
+                data[i].second->setText(spec.to_q_string(spec.force_bounds(val)));
             }
         }
 

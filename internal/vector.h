@@ -31,6 +31,15 @@ class Vector {
     size_t size_{}, capacity_{};
     T *data_ = nullptr;
 
+protected:
+    mutable std::mt19937 *rng = nullptr;
+
+    void ensure_rng(int seed = SEED) const {
+        if (rng == nullptr) {
+            rng = new std::mt19937(seed);
+        }
+    }
+
 public :
     Vector() = default;
 
@@ -150,9 +159,11 @@ public :
 
     template<typename U=T>
     Vector<U> deviate(U delta) const {
+        ensure_rng(SEED);
+
         auto vec = Vector<U>(*this);
         for (auto &el: vec) {
-            el += abs(2 * (rnd() - 0.5) * delta);
+            el += abs(2 * (rnd(*rng) - 0.5) * delta);
         }
         return vec;
     }
@@ -225,20 +236,20 @@ public :
 
     template<typename Integer>
     static Vector<Integer> generate(size_t size, Integer limit) {
-        static std::mt19937 mt(SEED);
         auto vec = Vector<T>(size);
+        vec.ensure_rng();
         for (auto &el: vec)
-            el = mt() % limit;
+            el = (*vec.rng)() % limit;
         return vec;
     }
 
     template<typename Float=double>
     static Vector<Float> generate_normal(size_t size) {
-        static std::mt19937 mt(SEED);
         std::uniform_real_distribution<Float> dis(0, 1);
         auto vec = Vector<Float>(size);
+        vec.ensure_rng();
         for (auto &el: vec)
-            el = dis(mt);
+            el = dis(*vec.rng);
         auto sum = std::accumulate(vec.begin(), vec.end(), static_cast<Float>(0.0));
         for (auto &el: vec)
             el /= sum;

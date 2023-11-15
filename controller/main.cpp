@@ -8,13 +8,10 @@
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-    auto chen_model = new ChenModelRunner;
-    defer([&]() { delete chen_model; });
+    auto chen_model = ChenModelRunner{};
+    auto table_model = TableModelRunner{};
 
-    auto table_model = new TableModelRunner;
-    defer([&]() { delete table_model; });
-
-    auto window = Window({chen_model, table_model});
+    auto window = Window({&chen_model, &table_model});
 
     return a.exec();
 }

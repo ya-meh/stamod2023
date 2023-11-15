@@ -8,16 +8,22 @@
 
 
 class ChenModelRunner : public ModelRunner {
-    const Vector<Spec> SPEC = {{INT,    1},
-                               {INT,    1},
-                               {INT,    1},
-                               {INT,    1},
+    const Vector<Spec> SPEC = {{INT,    1, 10'000},
+                               {INT,    1, 10'000},
+                               {INT,    1, 10'000},
+                               {INT,    1, 10'000},
                                {DOUBLE, 0, 1}};
+    Vector<double> last_valid;
+
 public:
     Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
         auto [msg, ok] = is_valid(data);
-        if (!ok)
+        if (!ok) {
+            if (msg == "ignore") {
+                return last_valid;
+            }
             throw std::invalid_argument(msg.toStdString());
+        }
 
         auto prob_len = to_int(data[0]);
         auto m = to_int(data[1]);
@@ -27,16 +33,16 @@ public:
 
         auto model = ChenModel(Vector<double>::generate_normal(prob_len), m);
 
-        return model
-                       .calc_p_values(exp_count, p_vals, model.deviate(deviation))
-                       .count_buckets(count)
-                       .convert<double>()
-               / p_vals;
+        return last_valid = model
+                                    .calc_p_values(exp_count, p_vals, model.deviate(deviation))
+                                    .count_buckets(count)
+                                    .convert<double>()
+                            / p_vals;
 
     }
 
     Config default_config() override {
-        return Config{"Chen Stat Model",
+        return Config{"Chen Stat Model\n(p-values)",
                       {"Threshold"},
                       {"P-Value"},
                       {
@@ -52,23 +58,28 @@ public:
     [[nodiscard]] const Vector<Spec> &input_types_spec() const override { return SPEC; }
 
     [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
-        return 1 + (to_double(data[4]) == 0);
+        return 1 + (std::abs(to_double(data[4])) >= std::numeric_limits<double>::epsilon());
     }
 };
 
 
 class TableModelRunner : public ModelRunner {
-    const Vector<Spec> SPEC = {{INT,    1},
-                               {INT,    1},
-                               {INT,    1},
-                               {INT,    1},
-                               {DOUBLE, 0}};
+    const Vector<Spec> SPEC = {{INT, 1, 10'000},
+                               {INT, 1, 10'000},
+                               {INT, 1, 10'000},
+                               {INT, 1, 10'000},
+                               {INT, 0, 10'000}};
+    Vector<double> last_valid;
 
 public:
     Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
         auto [msg, ok] = is_valid(data);
-        if (!ok)
+        if (!ok) {
+            if (msg == "ignore") {
+                return last_valid;
+            }
             throw std::invalid_argument(msg.toStdString());
+        }
 
         auto k_len = to_int(data[0]);
         auto max = to_int(data[1]);
@@ -78,16 +89,16 @@ public:
 
         auto model = TableModel(Vector<int>::generate(k_len, max));
 
-        return model
-                       .calc_p_values(exp_count, p_vals, model.deviate(deviation))
-                       .count_buckets(count)
-                       .convert<double>()
-               / p_vals;
+        return last_valid = model
+                                    .calc_p_values(exp_count, p_vals, model.deviate(deviation))
+                                    .count_buckets(count)
+                                    .convert<double>()
+                            / p_vals;
 
     }
 
     Config default_config() override {
-        return Config{"Table Stat Model",
+        return Config{"Table Stat Model\n(p-values)",
                       {"Threshold"},
                       {"P-Value"},
                       {
@@ -103,7 +114,7 @@ public:
     [[nodiscard]] const Vector<Spec> &input_types_spec() const override { return SPEC; }
 
     [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
-        return 1 + (to_int(data[4]) == 0);
+        return 1 + (std::abs(to_double(data[4])) >= std::numeric_limits<double>::epsilon());
     }
 };
 

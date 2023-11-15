@@ -12,6 +12,8 @@
 
 // Model -- interface for stat model
 class Model {
+    mutable std::mt19937 rng{SEED};
+
 public:
     [[nodiscard]] virtual size_t model(double alpha) const = 0;
 
@@ -22,9 +24,16 @@ public:
     [[nodiscard]] Vector<size_t> raw_experiment(size_t count) const {
         auto result_to_count = Vector<size_t>(probabilities().size());
         for (size_t i = 0; i < count; ++i) {
-            result_to_count[std::min(model(rnd()), probabilities().size()) - 1] += 1;
+            result_to_count[std::min(model(rnd(rng)), probabilities().size()) - 1] += 1;
         }
         return result_to_count;
+    }
+
+    [[nodiscard]] Experiments experiment(size_t count, const Model *alt = nullptr) const {
+        if (alt == nullptr)
+            alt = this;
+
+        return {(*alt).raw_experiment(count), probabilities() * count};
     }
 
     [[nodiscard]] Vector<double> calc_p_values(size_t experiments_n, size_t p_vals_n, Model *alt = nullptr) const {
@@ -37,13 +46,6 @@ public:
         }
 
         return p_values;
-    }
-
-    [[nodiscard]] Experiments experiment(size_t count, const Model *alt = nullptr) const {
-        if (alt == nullptr)
-            alt = this;
-
-        return {(*alt).raw_experiment(count), probabilities() * count};
     }
 
     virtual ~Model() = default;
