@@ -1,13 +1,24 @@
-#ifndef STATMOD_MODEL_LOGIC_H
-#define STATMOD_MODEL_LOGIC_H
+#ifndef STATMOD_P_VAL_MODEL_RUNNER_H
+#define STATMOD_P_VAL_MODEL_RUNNER_H
 
+#include "model_runner.h"
+#include "../view/p_val_graph_widget.h"
 
-#include "../gui/graph_input.h"
 #include "../model/model_chen.h"
 #include "../model/model_table.h"
 
+#include <QWidget>
 
-class ChenModelRunner : public ModelRunner {
+
+class PValuesModelRunner : public ModelRunner {
+public:
+    QWidget *new_graph_widget(QWidget *parent) override {
+        return new PValueGraphWidget(dynamic_cast<ModelRunner *>(this), parent);
+    }
+};
+
+
+class ChenPValuesModelRunner : public PValuesModelRunner {
     const Vector<Spec> SPEC = {{INT,    1, 10'000},
                                {INT,    1, 10'000},
                                {INT,    1, 10'000},
@@ -16,7 +27,7 @@ class ChenModelRunner : public ModelRunner {
     Vector<double> last_valid;
 
 public:
-    Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
+    Vector<double> gen(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
         auto [msg, ok] = is_valid(data);
         if (!ok) {
             if (msg == "ignore") {
@@ -42,7 +53,7 @@ public:
     }
 
     Config default_config() override {
-        return Config{"Chen Stat Model\n(p-values)",
+        return Config{"Chen Stat Model\n(Type I/II Errors)",
                       {"Threshold"},
                       {"P-Value"},
                       {
@@ -55,15 +66,15 @@ public:
         };
     }
 
-    [[nodiscard]] const Vector<Spec> &input_types_spec() const override { return SPEC; }
+    const Vector<Spec> &input_types_spec() const override { return SPEC; }
 
-    [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
+    int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
         return 1 + (std::abs(to_double(data[4])) >= std::numeric_limits<double>::epsilon());
     }
 };
 
 
-class TableModelRunner : public ModelRunner {
+class TablePValuesModelRunner : public PValuesModelRunner {
     const Vector<Spec> SPEC = {{INT, 1, 10'000},
                                {INT, 1, 10'000},
                                {INT, 1, 10'000},
@@ -72,7 +83,7 @@ class TableModelRunner : public ModelRunner {
     Vector<double> last_valid;
 
 public:
-    Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
+    Vector<double> gen(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) override {
         auto [msg, ok] = is_valid(data);
         if (!ok) {
             if (msg == "ignore") {
@@ -98,7 +109,7 @@ public:
     }
 
     Config default_config() override {
-        return Config{"Table Stat Model\n(p-values)",
+        return Config{"Table Stat Model\n(Type I/II Errors)",
                       {"Threshold"},
                       {"P-Value"},
                       {
@@ -106,17 +117,17 @@ public:
                               {"Max. Val.", 100},
                               {"Experiments Num.", 200},
                               {"p-val Num.", 1000},
-                              {"Max. Deviation", 33},
+                              {"Max. Deviation", 40},
                       }
         };
     }
 
-    [[nodiscard]] const Vector<Spec> &input_types_spec() const override { return SPEC; }
+    const Vector<Spec> &input_types_spec() const override { return SPEC; }
 
-    [[nodiscard]] int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
+    int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const override {
         return 1 + (std::abs(to_double(data[4])) >= std::numeric_limits<double>::epsilon());
     }
 };
 
 
-#endif //STATMOD_MODEL_LOGIC_H
+#endif //STATMOD_P_VAL_MODEL_RUNNER_H

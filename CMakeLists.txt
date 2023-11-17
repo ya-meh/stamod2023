@@ -12,17 +12,9 @@ set(CMAKE_AUTORCC ON)
 find_package(Qt6 COMPONENTS Widgets Charts REQUIRED)
 
 add_executable(${PROJECT_NAME}
-        controller/main.cpp
-        model/model.h
-        internal/probdist.h internal/probdist.cpp
-        internal/vector.h
-        internal/random.h
-        model/model_table.cpp model/model_table.h
-        model/experiment.cpp model/experiment.h
-        internal/pair.h
-        model/model_chen.cpp model/model_chen.h
-        internal/defer.h
-        gui/graph.h
-        controller/model_logic.h gui/graph_config.h gui/graph_input.h gui/window.h)
+        cmd/main.cpp
+        internal/probdist.h internal/probdist.cpp internal/vector.h internal/random.h internal/pair.h internal/defer.h
+        model/model.h model/model_table.cpp model/model_table.h model/experiment.cpp model/experiment.h model/model_chen.cpp model/model_chen.h
+        view/p_val_graph_widget.h view/graph_config.h controller/model_runner.h view/main_window.h controller/p_val_model_runner.h view/modeling_graph_widget.h controller/modeling_model_runner.h view/comparing_histogram.h)
 
 target_link_libraries(${PROJECT_NAME} Qt6::Widgets Qt6::Charts)

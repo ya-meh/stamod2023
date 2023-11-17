@@ -1,14 +1,12 @@
-#ifndef STATMOD_GRAPH_H
-#define STATMOD_GRAPH_H
+#ifndef STATMOD_P_VAL_GRAPH_WIDGET_H
+#define STATMOD_P_VAL_GRAPH_WIDGET_H
 
 #include "graph_config.h"
-#include "graph_input.h"
+#include "../controller/model_runner.h"
 
 #include "../internal/vector.h"
 #include "../internal/pair.h"
 #include "../model/model.h"
-#include "../model/model_chen.h"
-#include "../internal/defer.h"
 
 #include <QtWidgets>
 #include <QtCharts/QChartView>
@@ -22,14 +20,8 @@
 #include <iostream>
 #include <utility>
 
-
-class GraphWidget : public QWidget {
-signals:
-
-    void FormChanged(QEvent *event);
-
-private:
-
+class PValueGraphWidget : public QWidget {
+protected:
     Config cfg;
     Vector<Pair<QLabel *, QLineEdit *>> labels;
     ModelRunner *model_runner;
@@ -39,18 +31,19 @@ private:
     QChartView *chart_view;
     QLineSeries *series;
 
-protected:
-
-    void changeEvent(QEvent *event) override {
-//        emit FormCha
+    void clear_labels() {
+        for (auto [label, edit]: labels) {
+            delete label;
+            delete edit;
+        }
     }
 
 public:
-    explicit GraphWidget(ModelRunner *runner, QWidget *parent) : cfg(runner->default_config()),
-                                                                 QWidget(parent),
-                                                                 model_runner(runner),
-                                                                 x_axis(cfg.x_axis.convert()),
-                                                                 y_axis(cfg.y_axis.convert()) {
+    explicit PValueGraphWidget(ModelRunner *runner, QWidget *parent) : cfg(runner->default_config()),
+                                                                       QWidget(parent),
+                                                                       model_runner(runner),
+                                                                       x_axis(cfg.x_axis.convert()),
+                                                                       y_axis(cfg.y_axis.convert()) {
         this->parent = parent;
         chart = new QChart();
         chart_view = new QChartView(chart);
@@ -62,6 +55,7 @@ public:
         chart->addAxis(y_axis, Qt::AlignLeft);
 
         auto update_layout = [=]() {
+            clear_labels();
             labels = cfg.labels_input();
 
             chart->setTitle(cfg.title);
@@ -71,26 +65,26 @@ public:
             for (auto &[label, input]: labels) {
                 layout->addWidget(label);
                 layout->addWidget(input);
-                connect(input, &QLineEdit::textChanged, this, &GraphWidget::refresh);
+                connect(input, &QLineEdit::textChanged, this, &PValueGraphWidget::refresh);
             }
 
             auto *main_layout = new QVBoxLayout();
             main_layout->addWidget(chart_view);
             main_layout->addLayout(layout);
-
-            refresh();
-
             setLayout(main_layout);
         };
 
         update_layout();
+        refresh();
     }
 
     void refresh() {
         Vector<double> p_values;
 
         try {
-            p_values = model_runner->from(labels, cfg.points_n);
+            p_values = model_runner->gen(labels, cfg.points_n);
+            if (p_values.size() > 100'000) { p_values = p_values.sub_array(0, 100'000); }
+
             switch (model_runner->error_type(labels)) {
                 case 1: {
                     chart->removeAxis(y_axis);
@@ -119,6 +113,13 @@ public:
 
         chart_view->show();
     }
+
+    ~PValueGraphWidget() override {
+        delete x_axis;
+        delete y_axis;
+        delete chart;
+        delete chart_view;
+    }
 };
 
-#endif //STATMOD_GRAPH_H
+#endif //STATMOD_P_VAL_GRAPH_WIDGET_H

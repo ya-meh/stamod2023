@@ -2,7 +2,7 @@ FROM alpine:3.18.3
 
 WORKDIR /app
 
-RUN apk update && apk --no-cache add g++ make cmake valgrind qt5-qtbase-dev qt5-qtcharts-dev
+RUN apk update && apk --no-cache add g++ make cmake valgrind qt6-qtbase-dev qt6-qtcharts-dev
 
 COPY . /app
 

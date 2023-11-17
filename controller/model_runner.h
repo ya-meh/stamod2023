@@ -1,16 +1,18 @@
-#ifndef STATMOD_GRAPH_INPUT_H
-#define STATMOD_GRAPH_INPUT_H
+#ifndef STATMOD_MODEL_RUNNER_H
+#define STATMOD_MODEL_RUNNER_H
 
 
-#include "graph_config.h"
+#include "../view/graph_config.h"
 
 #include "../internal/pair.h"
 #include "../internal/vector.h"
 
+#include "../model/experiment.h"
+#include "../model/model.h"
+
 #include <numeric>
 #include <string>
 #include <exception>
-#include <iostream>
 
 #include <QLabel>
 #include <QLineEdit>
@@ -83,7 +85,7 @@ protected:
     };
 
     static int to_int(const Pair<QLabel *, QLineEdit *> &input) {
-        auto ret = input.second->text().toInt();
+        auto ret = std::stoi(input.second->text().toStdString());
         if (ret == 0) { // qt parses 200.3 to 0, not to 200
             return static_cast<int>(to_double(input));
         }
@@ -91,17 +93,24 @@ protected:
     }
 
     static double to_double(const Pair<QLabel *, QLineEdit *> &input) {
-        return input.second->text().toDouble();
+        return std::stod(input.second->text().toStdString());
     }
 
 public:
-    [[nodiscard]] virtual Vector<double> from(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) = 0;
+    [[nodiscard]] virtual Vector<double> gen(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) {
+        return {};
+    };
+
+    [[nodiscard]] virtual Pair<Vector<size_t>, Vector<double>>
+    gen_comparing(const Vector<Pair<QLabel *, QLineEdit *>> &data, size_t count) { return {}; };
 
     [[nodiscard]] virtual Config default_config() = 0;
 
     [[nodiscard]] virtual const Vector<Spec> &input_types_spec() const = 0;
 
     [[nodiscard]] virtual int error_type(const Vector<Pair<QLabel *, QLineEdit *>> &data) const { return 0; };
+
+    [[nodiscard]] virtual QWidget *new_graph_widget(QWidget *parent) = 0;
 
     [[nodiscard]] Pair<QString, bool> is_valid(const Vector<Pair<QLabel *, QLineEdit *>> &data) const {
         if (data.size() != input_types_spec().size())
@@ -119,9 +128,6 @@ public:
                     return {"parse failure of arg " + data[i].first->text(), false};
                 }
 
-                auto log = spec.to_q_string(spec.force_bounds(val));
-                std::cout << data[i].second->text().toStdString() << ' ' << val << ' ' << log.toStdString()
-                          << std::endl;
                 data[i].second->setText(spec.to_q_string(spec.force_bounds(val)));
             }
         }
@@ -132,4 +138,6 @@ public:
     virtual ~ModelRunner() = default;
 };
 
-#endif //STATMOD_GRAPH_INPUT_H
+
+
+#endif //STATMOD_MODEL_RUNNER_H

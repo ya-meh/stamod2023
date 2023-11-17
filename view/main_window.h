@@ -1,8 +1,8 @@
-#ifndef STATMOD_WINDOW_H
-#define STATMOD_WINDOW_H
+#ifndef STATMOD_MAIN_WINDOW_H
+#define STATMOD_MAIN_WINDOW_H
 
 
-#include "graph.h"
+#include "p_val_graph_widget.h"
 
 #include "../internal/vector.h"
 
@@ -16,11 +16,11 @@ public:
     explicit Window(Vector<ModelRunner *> models, int width = 800, int height = 600) : models_(std::move(models)) {
         auto bar = new QToolBar("Models", this);
 
-        auto help_action = new QAction("HELP", this);
-        connect(help_action, &QAction::triggered, [=]() {
-
-        });
-        bar->addAction(help_action);
+//        auto help_action = new QAction("HELP", this);
+//        connect(help_action, &QAction::triggered, [=]() {
+//
+//        });
+//        bar->addAction(help_action);
 
         for (auto model: models_) {
             auto action = new QAction(model->default_config().title, this);
@@ -32,7 +32,7 @@ public:
 
         addToolBar(bar);
 
-        bar->actions().last()->trigger();
+        bar->actions().first()->trigger();
 
         setMinimumSize(width, height);
         resize(width, height);
@@ -42,9 +42,11 @@ public:
 
     void set_model(ModelRunner *model) {
         delete graph_;
-        setCentralWidget(graph_ = new GraphWidget(model, this));
+        setCentralWidget(graph_ = model->new_graph_widget(this));
     }
+
+    ~Window() override { delete graph_; }
 };
 
 
-#endif //STATMOD_WINDOW_H
+#endif //STATMOD_MAIN_WINDOW_H

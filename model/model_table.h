@@ -20,9 +20,11 @@ public:
 
     [[nodiscard]] Model *deviate(long double delta) override;
 
-    [[nodiscard]] size_t model(double alpha) const override;
+    [[nodiscard]] size_t model(std::mt19937 *rng = nullptr) const override;
 
     [[nodiscard]] const Vector<double> &probabilities() const override;
+
+    size_t model(std::mt19937 rng) const;
 };
 
 

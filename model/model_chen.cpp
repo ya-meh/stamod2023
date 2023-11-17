@@ -1,7 +1,3 @@
-//
-// Created by Mikhail Kiselev on 28.08.2023.
-//
-
 #include "model_chen.h"
 
 ChenModel::ChenModel(const Vector<double> &prob, size_t m) : m(m),
@@ -20,7 +16,12 @@ ChenModel::ChenModel(const Vector<double> &prob, size_t m) : m(m),
     }
 }
 
-size_t ChenModel::model(double alpha) const {
+size_t ChenModel::model(std::mt19937 *rng) const {
+    if (rng == nullptr) {
+        rng = &rng_;
+    }
+
+    double alpha = rnd(*rng);
     size_t j = static_cast<double>(m) * alpha + 1, i = static_cast<size_t>(additional_[j - 1]);
     while (alpha > sums_[i - 1])
         i += 1;

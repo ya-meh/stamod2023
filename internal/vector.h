@@ -62,6 +62,24 @@ public :
         other.data_ = nullptr;
     }
 
+    template<typename U=T, typename Func>
+    static Vector<T> with_generator(size_t size, const Func &fn) {
+        auto ret = Vector<T>(size);
+        for (size_t i = 0; i < size; i++) {
+            ret[i] = fn();
+        }
+        return ret;
+    }
+
+    template<typename U=T, typename Func>
+    static Vector<T> with_generator_i(size_t size, const Func &fn) {
+        auto ret = Vector<T>(size);
+        for (size_t i = 0; i < size; i++) {
+            ret[i] = fn(i);
+        }
+        return ret;
+    }
+
     Vector<T> &operator=(const Vector<T> &other) {
         if (data_ == other.data_) {
             return *this;
@@ -125,10 +143,10 @@ public :
         return *this;
     }
 
-    [[nodiscard]] std::string to_string() const {
+    [[nodiscard]] std::string to_string(const std::string &sep = ", ") const {
         std::ostringstream oss;
         oss << '[';
-        oss << join(", ");
+        oss << join(sep);
         oss << ']';
         return oss.str();
     }
@@ -179,7 +197,7 @@ public :
         return normal;
     }
 
-    Vector<size_t> count_buckets(size_t count, T from = 0, T to = 1) {
+    Vector<size_t> count_buckets(size_t count, T from = 0, T to = 1) const {
         auto step = (to - from) / count;
         auto buckets = Vector<size_t>(count);
         for (size_t i = 1; i <= count; ++i) {
@@ -189,6 +207,70 @@ public :
             );
         }
         return buckets;
+    }
+
+    Vector<size_t> count_buckets_separated(size_t count, T from = 0, T to = 0) const {
+        if (from == to) {
+            from = min();
+            to = max();
+        }
+        auto step = static_cast<long double>(to - from) / count;
+        auto buckets = Vector<size_t>(count);
+        for (size_t i = 1; i <= count; ++i) {
+            long double bottom = from + step * (i - 1), top = from + step * i;
+            buckets[i - 1] = static_cast<long double>(
+                    std::count_if(begin(), end(),
+                                  [bottom, top](long double val) { return bottom <= val && val <= top; })
+            );
+        }
+        return buckets;
+    }
+
+    T max() const {
+        if (size() == 0) {
+            return T{};
+        }
+        auto ret = operator[](0);
+        for (size_t i = 1; i < size(); ++i) {
+            if (ret < operator[](i)) {
+                ret = operator[](i);
+            }
+        }
+        return ret;
+    }
+
+    T min() const {
+        if (size() == 0) {
+            return T{};
+        }
+        auto ret = operator[](0);
+        for (size_t i = 1; i < size(); ++i) {
+            if (ret > operator[](i)) {
+                ret = operator[](i);
+            }
+        }
+        return ret;
+    }
+
+    Vector<size_t> group_by(T step) const {
+        auto min = Vector::min();
+        auto ret = Vector<size_t>((max() - min) / step);
+
+        for (auto el: *this) {
+            ret[static_cast<size_t>((el - min) / step)] += 1;
+        }
+
+        return ret;
+    }
+
+    Vector<T> sub_array(size_t from, size_t len) const {
+        auto ret = Vector<T>{};
+
+        for (size_t i = from; i < std::min({i, from + len, size()}); i++) {
+            ret.push_back((*this)[i]);
+        }
+
+        return ret;
     }
 
     [[nodiscard]] T sum() const {
@@ -235,19 +317,19 @@ public :
     }
 
     template<typename Integer>
-    static Vector<Integer> generate(size_t size, Integer limit) {
+    static Vector<Integer> generate(size_t size, Integer limit, size_t seed = SEED) {
         auto vec = Vector<T>(size);
-        vec.ensure_rng();
+        vec.ensure_rng(seed);
         for (auto &el: vec)
             el = (*vec.rng)() % limit;
         return vec;
     }
 
     template<typename Float=double>
-    static Vector<Float> generate_normal(size_t size) {
+    static Vector<Float> generate_normal(size_t size, size_t seed = SEED) {
         std::uniform_real_distribution<Float> dis(0, 1);
         auto vec = Vector<Float>(size);
-        vec.ensure_rng();
+        vec.ensure_rng(seed);
         for (auto &el: vec)
             el = dis(*vec.rng);
         auto sum = std::accumulate(vec.begin(), vec.end(), static_cast<Float>(0.0));

@@ -19,8 +19,11 @@ Model *TableModel::deviate(long double delta) {
     return model;
 }
 
-size_t TableModel::model(double alpha) const {
-    auto d = static_cast<size_t>(alpha * sum_);
+size_t TableModel::model(std::mt19937 *rng) const {
+    if (rng == nullptr) {
+        rng = &rng_;
+    }
+    auto d = static_cast<size_t>(rnd(*rng) * sum_);
     return table_[std::min(static_cast<int>(d), sum_ - 1)];
 }
 

@@ -12,10 +12,11 @@
 
 // Model -- interface for stat model
 class Model {
-    mutable std::mt19937 rng{SEED};
+protected:
+    mutable std::mt19937 rng_{SEED};
 
 public:
-    [[nodiscard]] virtual size_t model(double alpha) const = 0;
+    [[nodiscard]] virtual size_t model(std::mt19937 *rng) const = 0;
 
     [[nodiscard]] virtual const Vector<double> &probabilities() const = 0;
 
@@ -24,7 +25,7 @@ public:
     [[nodiscard]] Vector<size_t> raw_experiment(size_t count) const {
         auto result_to_count = Vector<size_t>(probabilities().size());
         for (size_t i = 0; i < count; ++i) {
-            result_to_count[std::min(model(rnd(rng)), probabilities().size()) - 1] += 1;
+            result_to_count[std::min(model(&rng_), probabilities().size()) - 1] += 1;
         }
         return result_to_count;
     }
