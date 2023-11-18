@@ -37,8 +37,8 @@ public:
                            "  m -- length of supporting array for Chen modeling\n"
                            "  Exp. Num. -- number of experiments to generate a p-value\n"
                            "  p-val. Num. -- number of p-values to generate\n"
-                           "  Seed -- seed for a Mersenne Twister RNG\n"
-                           "  K/Prob. Gen. Seed -- seed for generating K/Prob."
+                           "  K/Prob. Gen. Seed -- seed for generating K/Prob.\n"
+                           "  Seed -- seed for a Mersenne Twister RNG for other random events"
             );
             msgBox.exec();
         });
