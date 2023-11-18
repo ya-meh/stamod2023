@@ -93,7 +93,12 @@ protected:
     }
 
     static double to_double(const Pair<QLabel *, QLineEdit *> &input) {
-        return std::stod(input.second->text().toStdString());
+        try {
+            return std::stod(input.second->text().toStdString());
+        }
+        catch (std::exception &e) {
+            return std::numeric_limits<double>::min();
+        }
     }
 
 public:
@@ -137,7 +142,6 @@ public:
 
     virtual ~ModelRunner() = default;
 };
-
 
 
 #endif //STATMOD_MODEL_RUNNER_H

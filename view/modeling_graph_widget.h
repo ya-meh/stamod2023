@@ -75,6 +75,7 @@ public:
         chart->addSeries(series);
 
         auto update_layout = [=]() {
+            auto refresh_button = new QPushButton("Refresh");
             clear_labels();
             labels = cfg.labels_input();
 
@@ -87,6 +88,10 @@ public:
                 layout->addWidget(input);
                 connect(input, &QLineEdit::textChanged, this, &ModelingGraphWidget::refresh);
             }
+            connect(refresh_button, &QPushButton::clicked, [=]() {
+                labels.back().second->setText(QString::fromStdString(std::to_string((int) (rnd_static() * 10000))));
+            });
+            layout->addWidget(refresh_button);
 
             auto *main_layout = new QVBoxLayout();
             main_layout->addWidget(chart_view);

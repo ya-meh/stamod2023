@@ -360,6 +360,21 @@ public :
             el /= sum;
         return vec;
     }
+
+    template<typename Func>
+    Vector<T> map(const Func &callback) const {
+        auto ret = Vector<T>{};
+        for (const auto &el: *this) {
+            ret.push_back(callback(el));
+        }
+        return ret;
+    }
+
+    Vector<T> reverse() const {
+        auto ret = *this;
+        std::reverse(std::begin(ret), std::end(ret));
+        return ret;
+    }
 };
 
 

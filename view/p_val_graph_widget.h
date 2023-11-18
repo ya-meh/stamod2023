@@ -56,6 +56,7 @@ public:
         chart->addAxis(y_axis, Qt::AlignLeft);
 
         auto update_layout = [=]() {
+            auto refresh_button = new QPushButton("Refresh");
             clear_labels();
             labels = cfg.labels_input();
 
@@ -68,6 +69,10 @@ public:
                 layout->addWidget(input);
                 connect(input, &QLineEdit::textChanged, this, &PValueGraphWidget::refresh);
             }
+            connect(refresh_button, &QPushButton::clicked, [=]() {
+                labels.back().second->setText(QString::fromStdString(std::to_string((int) (rnd_static() * 10000))));
+            });
+            layout->addWidget(refresh_button);
 
             auto *main_layout = new QVBoxLayout();
             main_layout->addWidget(chart_view);
@@ -84,7 +89,6 @@ public:
 
         try {
             p_values = model_runner->gen(labels, cfg.points_n);
-            if (p_values.size() > 100'000) { p_values = p_values.sub_array(0, 100'000); }
 
             switch (model_runner->error_type(labels)) {
                 case 1: {
@@ -116,6 +120,7 @@ public:
         series->append({0, 0});
         for (size_t i = 0; i < cfg.points_n; ++i)
             series->append({(i + 1) * delta, p_values[i]});
+        series->append({1, 1});
 
         chart->addSeries(redLineSeries);
         chart_view->show();

@@ -47,12 +47,13 @@ public:
 
         auto model = ChenModel(Vector<double>::generate_normal(prob_len, seed), m);
 
-        return last_valid = model
-                                    .calc_p_values(exp_count, p_vals, model.deviate(deviation))
-                                    .count_buckets(count)
-                                    .convert<double>()
-                            / p_vals;
-
+        return last_valid = (model
+                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation))
+                                     .count_buckets(count)
+                                     .convert<double>()
+                             / p_vals)
+                .map([](auto el) { return 1 - el; })
+                .reverse();
     }
 
     Config default_config() override {
@@ -63,8 +64,8 @@ public:
                               {"Prob. Len.", 20},
                               {"m", 10},
                               {"Experiments Num.", 200},
-                              {"p-val Num.", 10000},
-                              {"Max. Deviation", 0, Config::Field::DOUBLE},
+                              {"p-val Num.", 1000},
+                              {"Max. Deviation", 0},
                               {"Seed", SEED},
                       }
         };
@@ -106,12 +107,13 @@ public:
 
         auto model = TableModel((Vector<double>::generate_floaty(k_len, seed) * max).convert_rounded<int>());
 
-        return last_valid = model
-                                    .calc_p_values(exp_count, p_vals, model.deviate(deviation))
-                                    .count_buckets(count)
-                                    .convert<double>()
-                            / p_vals;
-
+        return last_valid = (model
+                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation))
+                                     .count_buckets(count)
+                                     .convert<double>()
+                             / p_vals)
+                .map([](auto el) { return 1 - el; })
+                .reverse();
     }
 
     Config default_config() override {
@@ -120,9 +122,9 @@ public:
                       {"P-Value"},
                       {
                               {"K Len.", 20},
-                              {"Max. Val.", 1000},
+                              {"Max. Val.", 100},
                               {"Experiments Num.", 200},
-                              {"p-val Num.", 10000},
+                              {"p-val Num.", 1000},
                               {"Max. Deviation", 0},
                               {"Seed", SEED},
                       }
