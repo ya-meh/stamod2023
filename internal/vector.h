@@ -312,6 +312,23 @@ public :
         return target;
     }
 
+    template<typename Target=double>
+    [[nodiscard]]  Vector<Target> convert_rounded() const {
+        auto target = Vector<Target>{};
+
+        for (auto el: *this)
+            target.push_back(static_cast<Target>(std::round(el)));
+
+        if (target.size() == 0) {
+            target.push_back(0);
+        }
+        if (target.sum() == 0) {
+            target[0] = 1;
+        }
+
+        return target;
+    }
+
     virtual ~Vector() {
         delete[]data_;
     }
@@ -326,12 +343,18 @@ public :
     }
 
     template<typename Float=double>
-    static Vector<Float> generate_normal(size_t size, size_t seed = SEED) {
+    static Vector<Float> generate_floaty(size_t size, size_t seed = SEED) {
         std::uniform_real_distribution<Float> dis(0, 1);
         auto vec = Vector<Float>(size);
         vec.ensure_rng(seed);
         for (auto &el: vec)
             el = dis(*vec.rng);
+        return vec;
+    }
+
+    template<typename Float=double>
+    static Vector<Float> generate_normal(size_t size, size_t seed = SEED) {
+        auto vec = Vector<Float>::generate_floaty(size, seed);
         auto sum = std::accumulate(vec.begin(), vec.end(), static_cast<Float>(0.0));
         for (auto &el: vec)
             el /= sum;

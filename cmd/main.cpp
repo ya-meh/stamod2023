@@ -19,7 +19,7 @@ int main(int argc, char *argv[]) {
     auto chen_modeling = ChenModelingModelRunner{};
     auto table_modeling = TableModelingModelRunner{};
 
-    auto window = Window({&chen_modeling, &table_modeling, &chen_model, &table_model,});
+    auto window = Window({&table_modeling, &table_model, &chen_modeling, &chen_model,});
 
     return a.exec();
 }

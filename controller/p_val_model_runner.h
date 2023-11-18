@@ -19,11 +19,13 @@ public:
 
 
 class ChenPValuesModelRunner : public PValuesModelRunner {
-    const Vector<Spec> SPEC = {{INT,    1, 10'000},
-                               {INT,    1, 10'000},
-                               {INT,    1, 10'000},
-                               {INT,    1, 10'000},
-                               {DOUBLE, 0, 1}};
+    const Vector<Spec> SPEC = {{INT,    1, 1'000},
+                               {INT,    1, 1'000},
+                               {INT,    1, 1'000},
+                               {INT,    1, 100'000},
+                               {DOUBLE, 0, 1},
+                               {INT,    0, 1'000'000'000}};
+
     Vector<double> last_valid;
 
 public:
@@ -41,8 +43,9 @@ public:
         auto exp_count = to_int(data[2]);
         auto p_vals = to_int(data[3]);
         auto deviation = to_double(data[4]);
+        auto seed = to_int(data[5]);
 
-        auto model = ChenModel(Vector<double>::generate_normal(prob_len), m);
+        auto model = ChenModel(Vector<double>::generate_normal(prob_len, seed), m);
 
         return last_valid = model
                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation))
@@ -57,11 +60,12 @@ public:
                       {"Threshold"},
                       {"P-Value"},
                       {
-                              {"Prob. Len.", 40},
+                              {"Prob. Len.", 20},
                               {"m", 10},
                               {"Experiments Num.", 200},
-                              {"p-val Num.", 1000},
-                              {"Max. Deviation", 0.025, Config::Field::DOUBLE},
+                              {"p-val Num.", 10000},
+                              {"Max. Deviation", 0, Config::Field::DOUBLE},
+                              {"Seed", SEED},
                       }
         };
     }
@@ -78,8 +82,9 @@ class TablePValuesModelRunner : public PValuesModelRunner {
     const Vector<Spec> SPEC = {{INT, 1, 10'000},
                                {INT, 1, 10'000},
                                {INT, 1, 10'000},
-                               {INT, 1, 10'000},
-                               {INT, 0, 10'000}};
+                               {INT, 1, 100'000},
+                               {INT, 0, 10'000},
+                               {INT, 0, 1'000'000'000}};
     Vector<double> last_valid;
 
 public:
@@ -97,8 +102,9 @@ public:
         auto exp_count = to_int(data[2]);
         auto p_vals = to_int(data[3]);
         auto deviation = to_double(data[4]);
+        auto seed = to_int(data[5]);
 
-        auto model = TableModel(Vector<int>::generate(k_len, max));
+        auto model = TableModel((Vector<double>::generate_floaty(k_len, seed) * max).convert_rounded<int>());
 
         return last_valid = model
                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation))
@@ -113,11 +119,12 @@ public:
                       {"Threshold"},
                       {"P-Value"},
                       {
-                              {"K Len.", 15},
-                              {"Max. Val.", 100},
+                              {"K Len.", 20},
+                              {"Max. Val.", 1000},
                               {"Experiments Num.", 200},
-                              {"p-val Num.", 1000},
-                              {"Max. Deviation", 40},
+                              {"p-val Num.", 10000},
+                              {"Max. Deviation", 0},
+                              {"Seed", SEED},
                       }
         };
     }

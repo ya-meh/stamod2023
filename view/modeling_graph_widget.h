@@ -48,10 +48,10 @@ protected:
                 std::chrono::steady_clock::now() - start).count()) / 1'000'000;
         auto elapsed_str = QString::fromStdString(std::to_string(elapsed));
 
-        auto results = Experiments(obs, exp);
+        auto results = Experiments(obs, exp).unionize();
         auto chi_sq = QString::fromStdString(std::to_string(results.chi_square()));
         auto p_value = QString::fromStdString(std::to_string(results.p_value()));
-        auto df = QString::fromStdString(std::to_string(obs.size() - 1));
+        auto df = QString::fromStdString(std::to_string(results.size() - 1));
 
         return HistogramChart::build_generic(
                 obs, "> Observed",

@@ -19,6 +19,7 @@
 
 #include <iostream>
 #include <utility>
+#include <QScatterSeries>
 
 class PValueGraphWidget : public QWidget {
 protected:
@@ -104,6 +105,11 @@ public:
             return;
         }
 
+        auto *redLineSeries = new QLineSeries();
+        redLineSeries->setColor(Qt::red);
+        redLineSeries->append(0, 0);
+        redLineSeries->append(1, 1);
+
         series->clear();
 
         auto delta = (cfg.x_axis.max - cfg.x_axis.min) / cfg.points_n;
@@ -111,6 +117,7 @@ public:
         for (size_t i = 0; i < cfg.points_n; ++i)
             series->append({(i + 1) * delta, p_values[i]});
 
+        chart->addSeries(redLineSeries);
         chart_view->show();
     }
 

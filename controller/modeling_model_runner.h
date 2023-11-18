@@ -19,8 +19,8 @@ class ChenModelingModelRunner : public ModelingModelRunner {
     const Vector<Spec> SPEC = {
             {INT, 1, 10'000},
             {INT, 1, 10'000},
-            {INT, 0, 10'000},
-            {INT, 1, 10'000'000},
+            {INT, 1, 10'000},
+            {INT, 0, 1'000'000'000},
     };
     Pair<Vector<size_t>, Vector<double>> last_valid;
 
@@ -32,8 +32,8 @@ public:
                       {
                               {"Prob. Vector Len.", 10},
                               {"m", 10},
+                              {"Experiments Count", 300},
                               {"Seed", SEED},
-                              {"Experiments Count", 1000},
                       }
         };
     }
@@ -58,8 +58,8 @@ public:
 
         auto prob_len = to_int(data[0]);
         auto m = to_int(data[1]);
-        auto seed = to_int(data[2]);
-        auto cnt = to_int(data[3]);
+        auto cnt = to_int(data[2]);
+        auto seed = to_int(data[3]);
 
         auto model = ChenModel(Vector<double>::generate_normal(prob_len, seed), m);
         return last_valid = {model.raw_experiment(cnt), model.probabilities() * cnt};
@@ -74,8 +74,8 @@ class TableModelingModelRunner : public ModelingModelRunner {
     const Vector<Spec> SPEC = {
             {INT, 1, 10'000},
             {INT, 1, 1000},
-            {INT, 0, 10'000},
-            {INT, 1, 10'000'000},
+            {INT, 1, 10'000},
+            {INT, 0, 1'000'000'000},
     };
     Pair<Vector<size_t>, Vector<double>> last_valid;
 
@@ -87,8 +87,8 @@ public:
                       {
                               {"k Vector Len.", 10},
                               {"k Vector Max. Val.", 100},
+                              {"Experiments Count", 300},
                               {"Seed", SEED},
-                              {"Experiments Count", 1000},
                       }
         };
     }
@@ -113,10 +113,11 @@ public:
 
         auto prob_len = to_int(data[0]);
         auto max_val = to_int(data[1]);
-        auto seed = to_int(data[2]);
-        auto cnt = to_int(data[3]);
+        auto cnt = to_int(data[2]);
+        auto seed = to_int(data[3]);
 
-        auto model = TableModel(Vector<int>::generate(prob_len, max_val, seed));
+        auto model = TableModel(
+                (Vector<double>::generate_floaty(prob_len, seed) * max_val).convert_rounded<int>());
         return last_valid = {model.raw_experiment(cnt), model.probabilities() * cnt};
     }
 
