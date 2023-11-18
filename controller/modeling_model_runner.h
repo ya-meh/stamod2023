@@ -19,7 +19,8 @@ class ChenModelingModelRunner : public ModelingModelRunner {
     const Vector<Spec> SPEC = {
             {INT, 1, 10'000},
             {INT, 1, 10'000},
-            {INT, 1, 10'000},
+            {INT, 1, 10'000'000},
+            {INT, 0, 1'000'000'000},
             {INT, 0, 1'000'000'000},
     };
     Pair<Vector<size_t>, Vector<double>> last_valid;
@@ -30,9 +31,10 @@ public:
                       {"X"},
                       {"Value"},
                       {
-                              {"Prob. Vector Len.", 10},
+                              {"Prob. Len.", 10},
                               {"m", 10},
-                              {"Experiments Count", 300},
+                              {"Exp. Num.", 300},
+                              {"Prob. Gen. Seed", SEED},
                               {"Seed", SEED},
                       }
         };
@@ -59,10 +61,11 @@ public:
         auto prob_len = to_int(data[0]);
         auto m = to_int(data[1]);
         auto cnt = to_int(data[2]);
-        auto seed = to_int(data[3]);
+        auto prob_seed = to_int(data[3]);
+        auto seed = to_int(data[4]);
 
-        auto model = ChenModel(Vector<double>::generate_normal(prob_len, seed), m);
-        return last_valid = {model.raw_experiment(cnt), model.probabilities() * cnt};
+        auto model = ChenModel(Vector<double>::generate_normal(prob_len, prob_seed), m);
+        return last_valid = {model.raw_experiment(cnt, seed), model.probabilities() * cnt};
     }
 
     QWidget *new_graph_widget(QWidget *parent) override {
@@ -74,7 +77,8 @@ class TableModelingModelRunner : public ModelingModelRunner {
     const Vector<Spec> SPEC = {
             {INT, 1, 10'000},
             {INT, 1, 1000},
-            {INT, 1, 10'000},
+            {INT, 1, 10'000'000},
+            {INT, 0, 1'000'000'000},
             {INT, 0, 1'000'000'000},
     };
     Pair<Vector<size_t>, Vector<double>> last_valid;
@@ -85,9 +89,10 @@ public:
                       {"X"},
                       {"Value"},
                       {
-                              {"k Vector Len.", 10},
-                              {"k Vector Max. Val.", 100},
-                              {"Experiments Count", 300},
+                              {"K Len.", 10},
+                              {"K Max.", 100},
+                              {"Exp. Num.", 300},
+                              {"K Gen. Seed", SEED},
                               {"Seed", SEED},
                       }
         };
@@ -114,11 +119,12 @@ public:
         auto prob_len = to_int(data[0]);
         auto max_val = to_int(data[1]);
         auto cnt = to_int(data[2]);
-        auto seed = to_int(data[3]);
+        auto k_seed = to_int(data[3]);
+        auto seed = to_int(data[4]);
 
         auto model = TableModel(
-                (Vector<double>::generate_floaty(prob_len, seed) * max_val).convert_rounded<int>());
-        return last_valid = {model.raw_experiment(cnt), model.probabilities() * cnt};
+                (Vector<double>::generate_floaty(prob_len, k_seed) * max_val).convert_rounded<int>());
+        return last_valid = {model.raw_experiment(cnt, seed), model.probabilities() * cnt};
     }
 
     QWidget *new_graph_widget(QWidget *parent) override {

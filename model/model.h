@@ -20,12 +20,21 @@ public:
 
     [[nodiscard]] virtual const Vector<double> &probabilities() const = 0;
 
-    [[nodiscard]] virtual Model *deviate(long double delta) { return this; };
+    [[nodiscard]] virtual Model *deviate(long double delta, size_t seed = SEED) { return this; };
 
     [[nodiscard]] Vector<size_t> raw_experiment(size_t count) const {
         auto result_to_count = Vector<size_t>(probabilities().size());
         for (size_t i = 0; i < count; ++i) {
             result_to_count[std::min(model(&rng_), probabilities().size()) - 1] += 1;
+        }
+        return result_to_count;
+    }
+
+    [[nodiscard]] Vector<size_t> raw_experiment(size_t count, size_t seed) const {
+        auto mt = std::mt19937(seed);
+        auto result_to_count = Vector<size_t>(probabilities().size());
+        for (size_t i = 0; i < count; ++i) {
+            result_to_count[std::min(model(&mt), probabilities().size()) - 1] += 1;
         }
         return result_to_count;
     }

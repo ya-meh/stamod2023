@@ -32,6 +32,6 @@ const Vector<double> &ChenModel::probabilities() const {
     return probabilities_;
 }
 
-Model *ChenModel::deviate(long double delta) {
-    return new ChenModel{probabilities_.deviate<double>(delta).normalize(), m};
+Model *ChenModel::deviate(long double delta, size_t seed) {
+    return new ChenModel{probabilities_.deviate<double>(delta, seed).normalize(), m};
 }

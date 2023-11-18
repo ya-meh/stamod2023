@@ -44,11 +44,15 @@ public:
         auto p_vals = to_int(data[3]);
         auto deviation = to_double(data[4]);
         auto seed = to_int(data[5]);
+        auto h_0_seed = SEED;
+        if (deviation == 0) {
+            h_0_seed = seed;
+        }
 
-        auto model = ChenModel(Vector<double>::generate_normal(prob_len, seed), m);
+        auto model = ChenModel(Vector<double>::generate_normal(prob_len, h_0_seed), m);
 
         return last_valid = (model
-                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation))
+                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation, seed))
                                      .count_buckets(count)
                                      .convert<double>()
                              / p_vals)
@@ -58,14 +62,14 @@ public:
 
     Config default_config() override {
         return Config{"Chen Stat Model\n(Type I/II Errors)",
-                      {"Threshold"},
+                      {"Significance Level"},
                       {"P-Value"},
                       {
                               {"Prob. Len.", 20},
                               {"m", 10},
-                              {"Experiments Num.", 200},
-                              {"p-val Num.", 1000},
-                              {"Max. Deviation", 0},
+                              {"Exp. Num.", 200},
+                              {"p-val. Num.", 1000},
+                              {"Alt. Deviation", 0},
                               {"Seed", SEED},
                       }
         };
@@ -104,11 +108,15 @@ public:
         auto p_vals = to_int(data[3]);
         auto deviation = to_double(data[4]);
         auto seed = to_int(data[5]);
+        auto h_0_seed = SEED;
+        if (deviation == 0) {
+            h_0_seed = seed;
+        }
 
-        auto model = TableModel((Vector<double>::generate_floaty(k_len, seed) * max).convert_rounded<int>());
+        auto model = TableModel((Vector<double>::generate_floaty(k_len, h_0_seed) * max).convert_rounded<int>());
 
         return last_valid = (model
-                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation))
+                                     .calc_p_values(exp_count, p_vals, model.deviate(deviation, seed))
                                      .count_buckets(count)
                                      .convert<double>()
                              / p_vals)
@@ -118,14 +126,14 @@ public:
 
     Config default_config() override {
         return Config{"Table Stat Model\n(Type I/II Errors)",
-                      {"Threshold"},
+                      {"Significance Level"},
                       {"P-Value"},
                       {
                               {"K Len.", 20},
-                              {"Max. Val.", 100},
-                              {"Experiments Num.", 200},
-                              {"p-val Num.", 1000},
-                              {"Max. Deviation", 0},
+                              {"K Max.", 100},
+                              {"Exp. Num.", 200},
+                              {"p-val. Num.", 1000},
+                              {"Alt. Deviation", 0},
                               {"Seed", SEED},
                       }
         };

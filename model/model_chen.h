@@ -19,7 +19,7 @@ public:
 
     [[nodiscard]] const Vector<double> &probabilities() const override;
 
-    [[nodiscard]] Model *deviate(long double delta) override;;
+    [[nodiscard]] Model *deviate(long double delta, size_t seed = SEED) override;;
 };
 
 

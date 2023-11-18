@@ -14,8 +14,8 @@ TableModel::TableModel(const Vector<int> &k) : sum_(k.sum()), table_(sum_), prob
     probabilities_ = k.convert<double>() / sum_;
 }
 
-Model *TableModel::deviate(long double delta) {
-    auto model = new TableModel{k.deviate(static_cast<int>(delta))};
+Model *TableModel::deviate(long double delta, size_t seed) {
+    auto model = new TableModel{k.deviate(static_cast<int>(delta), seed)};
     return model;
 }
 

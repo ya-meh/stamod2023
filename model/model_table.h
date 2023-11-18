@@ -18,7 +18,7 @@ class TableModel : public Model {
 public:
     explicit TableModel(const Vector<int> &k);
 
-    [[nodiscard]] Model *deviate(long double delta) override;
+    [[nodiscard]] Model *deviate(long double delta, size_t seed = SEED) override;
 
     [[nodiscard]] size_t model(std::mt19937 *rng = nullptr) const override;
 

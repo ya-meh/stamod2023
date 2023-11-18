@@ -176,8 +176,8 @@ public :
     }
 
     template<typename U=T>
-    Vector<U> deviate(U delta) const {
-        ensure_rng(SEED);
+    Vector<U> deviate(U delta, size_t seed = SEED) const {
+        ensure_rng(seed);
 
         auto vec = Vector<U>(*this);
         for (auto &el: vec) {
