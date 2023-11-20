@@ -13,7 +13,7 @@ class Window : public QMainWindow {
     Vector<ModelRunner *> models_;
     QWidget *graph_ = nullptr;
 public:
-    explicit Window(Vector<ModelRunner *> models, int width = 800, int height = 600) : models_(std::move(models)) {
+    explicit Window(Vector<ModelRunner *> models, int width = 1280, int height = 800) : models_(std::move(models)) {
         auto bar = new QToolBar("Models", this);
 
         auto help_action = new QAction("Help", this);
@@ -58,7 +58,9 @@ public:
         }
 
         addToolBar(bar);
-        base->trigger();
+        if (base != nullptr) {
+            base->trigger();
+        }
 
         setMinimumSize(width, height);
         resize(width, height);

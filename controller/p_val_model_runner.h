@@ -63,7 +63,7 @@ public:
     Config default_config() override {
         return Config{"Chen Stat Model\n(Type I/II Errors)",
                       {"Significance Level"},
-                      {"P-Value"},
+                      {"Error Value"},
                       {
                               {"Prob. Len.", 20},
                               {"m", 10},
@@ -120,14 +120,14 @@ public:
                                      .count_buckets(count)
                                      .convert<double>()
                              / p_vals)
-                .map([](auto el) { return 1 - el; })
-                .reverse();
+                .map([](auto el) { return 1 - el; });
+//                .reverse();
     }
 
     Config default_config() override {
         return Config{"Table Stat Model\n(Type I/II Errors)",
                       {"Significance Level"},
-                      {"P-Value"},
+                      {"Error Value"},
                       {
                               {"K Len.", 20},
                               {"K Max.", 100},

@@ -54,8 +54,8 @@ protected:
         auto df = QString::fromStdString(std::to_string(results.size() - 1));
 
         return HistogramChart::build_generic(
-                obs, "> Observed",
-                exp, "> Expected",
+                obs, "Observed over Expected",
+                exp, "Expected over Observed",
                 Vector<std::string>::with_generator_i(obs.size(), [](size_t i) {
                     return std::to_string(i + 1);
                 }),

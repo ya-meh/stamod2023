@@ -92,6 +92,14 @@ protected:
         return ret;
     }
 
+    static int try_to_int(const Pair<QLabel *, QLineEdit *> &input) {
+        try {
+            return to_int(input);
+        } catch (std::exception &e) {
+            return -1;
+        }
+    }
+
     static double to_double(const Pair<QLabel *, QLineEdit *> &input) {
         try {
             return std::stod(input.second->text().toStdString());

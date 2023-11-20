@@ -31,6 +31,7 @@ protected:
     QChart *chart;
     QChartView *chart_view;
     QLineSeries *series;
+    QString title;
 
     void clear_labels() {
         for (auto [label, edit]: labels) {
@@ -54,6 +55,9 @@ public:
 
         chart->addAxis(x_axis, Qt::AlignBottom);
         chart->addAxis(y_axis, Qt::AlignLeft);
+
+        auto title_str = cfg.title.toStdString();
+        title = QString::fromStdString(title_str.substr(0, title_str.size() - 19));
 
         auto update_layout = [=]() {
             auto refresh_button = new QPushButton("Refresh");
@@ -87,19 +91,18 @@ public:
     void refresh() {
         Vector<double> p_values;
 
+        QString error_type;
         try {
             p_values = model_runner->gen(labels, cfg.points_n);
 
             switch (model_runner->error_type(labels)) {
                 case 1: {
-                    chart->removeAxis(y_axis);
-                    y_axis->setTitleText("Type I Error");
+                    error_type = "I";
                     chart->addAxis(y_axis, Qt::AlignLeft);
                     break;
                 }
                 case 2: {
-                    chart->removeAxis(y_axis);
-                    y_axis->setTitleText("Type II Error");
+                    error_type = "II";
                     chart->addAxis(y_axis, Qt::AlignLeft);
                     break;
                 }
@@ -123,6 +126,7 @@ public:
         series->append({1, 1});
 
         chart->addSeries(redLineSeries);
+        chart->setTitle(title + ": Type " + error_type + " Error");
         chart_view->show();
     }
 

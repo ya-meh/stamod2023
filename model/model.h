@@ -43,7 +43,7 @@ public:
         if (alt == nullptr)
             alt = this;
 
-        return {(*alt).raw_experiment(count), probabilities() * count};
+        return {(*alt).raw_experiment(count), this->probabilities() * count};
     }
 
     [[nodiscard]] Vector<double> calc_p_values(size_t experiments_n, size_t p_vals_n, Model *alt = nullptr) const {
